@@ -1,0 +1,630 @@
+// By Munett
+// MIT Open Source
+
+@import "global";
+
+//
+// @name
+// @dependencies _global.scss
+//
+
+//
+// @variables
+//
+
+//
+// Bottom Bar Variables
+//
+$include-html-bottom-bar-classes: $include-html-classes !default;
+
+// Background colbottombar-bg: $bottom-bar-bg-color !default;
+// Bottombar Height and marginbottombar
+$bottombar-height: 45px !default;
+$bottombar-margin-bottom: 0 !default;
+
+// Position
+$bottombar-position: fixed !default;
+$bottombar-position-bottom: 0 !default;
+
+// Controlling the styles for the title in the top bar
+$bottombar-title-weight: normal !default;
+$bottombar-title-font-size: rem-calc(17) !default;
+
+// Style the top bar dropdown elements
+$bottombar-dropdown-bg: #333 !default;
+$bottombar-dropdown-link-color: #fff !default;
+$bottombar-dropdown-link-bg: #333 !default;
+$bottombar-dropdown-link-weight: normal !default;
+$bottombar-dropdown-toggle-size: 5px !default;
+$bottombar-dropdown-toggle-color: #fff !default;
+$bottombar-dropdown-toggle-alpha: 0.4 !default;
+
+// Set the link colors and styles for top-level nav
+$bottombar-link-color: #969696 !default;
+$bottombar-link-color-hover: #969696 !default;
+$bottombar-link-color-active: #969696 !default;
+$bottombar-link-color-active-hover: #969696 !default;
+$bottombar-link-weight: normal !default;
+$bottombar-link-font-size: rem-calc(13) !default;
+$bottombar-link-hover-lightness: -10% !default; // Darken by 10%
+$bottombar-link-bg: $bottombar-bg !default;
+$bottombar-link-bg-hover: #272727 !default;
+$bottombar-link-bg-active: $primary-color !default;
+$bottombar-link-bg-active-hover: scale-color($primary-color, $lightness: -14%) !default;
+$bottombar-link-font-family: $body-font-family !default;
+$bottombar-link-text-transform: none !default;
+$bottombar-link-padding: $bottombar-height / 3 !default;
+
+$bottombar-button-font-size: 0.75rem;
+$bottombar-button-top: 7px !default;
+
+$bottombar-dropdown-label-color: #777 !default;
+$bottombar-dropdown-label-text-transform: uppercase !default;
+$bottombar-dropdown-label-font-weight: bold !default;
+$bottombar-dropdown-label-font-size: rem-calc(10) !default;
+$bottombar-dropdown-label-bg: #333 !default;
+
+// Top menu icon styles
+$bottombar-menu-link-transform: uppercase !default;
+$bottombar-menu-link-font-size: rem-calc(13) !default;
+$bottombar-menu-link-weight: bold !default;
+$bottombar-menu-link-color: #969696 !default;
+$bottombar-menu-icon-color: #969696 !default;
+$bottombar-menu-link-color-toggled: #888 !default;
+$bottombar-menu-icon-color-toggled: #888 !default;
+
+// Transitions and breakpoint styles
+$bottombar-transition-speed: 300ms !default;
+// Using rem-calc for the below breakpoint causes issues with top bar
+$bottombar-breakpoint: #{lower-bound($medium-range)} !default; // Change to 9999px for always mobile layout
+$bottombar-media-query: $medium-up !default;
+
+// Divider Styles
+$bottombar-divider-border-bottom: solid 1px  scale-color($bottombar-bg-color, $lightness: 13%) !default;
+$bottombar-divider-border-top: solid 1px scale-color($bottombar-bg-color, $lightness: -50%) !default;
+
+// Sticky Class
+$bottombar-sticky-class: ".sticky" !default;
+$bottombar-arrows: true !default; //Set false to remove the triangle icon from the menu item
+
+// Accessibility mixins for hiding and showing the menu dropdown items
+@mixin bottombar-hide-dropdown {
+  // Makes an element visually hidden by default, but visible when focused.
+  display: block;
+  @include element-invisible();
+}
+
+@mixin bottombar-show-dropdown {
+  display: block;
+  @include element-invisible-off();
+  position: absolute !important; // Reset the position from static to absolute
+}
+
+@include exports("bottom-bar") {
+
+  @if $include-html-bottom-bar-classes {
+
+    // Used to provide media query values for javascript components.
+    // This class is generated despite the value of $include-html-bottom-bar-classes
+    // to ensure width calculations work correctly.
+    meta.foundation-mq-bottombar {
+      font-family: "/" + unquote($bottombar-media-query) + "/";
+      width: $bottombar-breakpoint;
+    }
+
+    /* Wrapped around .bottom-bar to contain to grid width */
+    .contain-to-grid {
+      width: 100%;
+      background: $bottombar-bg;
+
+      .bottom-bar { margin-bottom: $bottombar-margin-bottom; }
+    }
+
+    .bottom-bar {
+      overflow: hidden;
+      width: 100%;
+      height: $bottombar-height;
+      line-height: $bottombar-height;
+      position: $bottombar-position;
+      bottom: $bottombar-position-bottom;
+      background: $bottombar-bg;
+      margin-bottom: $bottombar-margin-bottom;
+
+      // Topbar Global list Styles
+      ul {
+        margin-bottom: 0;
+        list-style: none;
+      }
+
+      .row { max-width: none; }
+
+      form,
+      input { margin-bottom: 0; }
+
+      input { height: auto; padding-top: .35rem; padding-bottom: .35rem; font-size: $bottombar-button-font-size; }
+
+      .button {
+        padding-top: .45rem;
+        padding-bottom: .35rem;
+        margin-bottom: 0;
+        font-size: $bottombar-button-font-size;
+          // position: relative;
+          // top: -1px;
+
+      }
+
+      // Title Area
+      .title-area {
+        position: relative;
+        margin: 0;
+      }
+
+      .name {
+        height: $bottombar-height;
+        margin: 0;
+        font-size: $rem-base;
+
+        h1 {
+          line-height: $bottombar-height;
+          font-size: $bottombar-title-font-size;
+          margin: 0;
+          a {
+            font-weight: $bottombar-title-weight;
+            color: $bottombar-link-color;
+            width: 50%;
+            display: block;
+            padding: 0 $bottombar-link-padding;
+          }
+        }
+      }
+
+      // Menu toggle button on small devices
+      .toggle-bottombar {
+        position: absolute;
+        #{$opposite-direction}: 0;
+        top: 0;
+
+        a {
+          color: $bottombar-link-color;
+          text-transform: $bottombar-menu-link-transform;
+          font-size: $bottombar-menu-link-font-size;
+          font-weight: $bottombar-menu-link-weight;
+          position: relative;
+          display: block;
+          padding: 0 $bottombar-link-padding;
+          height: $bottombar-height;
+          line-height: $bottombar-height;
+        }
+
+        // Adding the class "menu-icon" will add the 3-line icon people love and adore.
+        &.menu-icon {
+          #{$opposite-direction}: $bottombar-link-padding;
+          top: 50%;
+          margin-top: -16px;
+          padding-#{$default-float}: 40px;
+
+          a {
+            @if $text-direction == rtl {
+              text-indent: -58px;
+            }
+            height: 34px;
+            line-height: 33px;
+            padding: 0;
+            padding-right: 25px;
+            color: $bottombar-menu-link-color;
+            position: relative;
+
+            &::after {
+              content:"";
+              position: absolute;
+              #{$opposite-direction}: 0;
+              display: block;
+              width: 16px;
+              top:0;
+              height: 0;
+              // Shh, don't tell, but box-shadows create the menu icon :)
+              @if $experimental {
+                -webkit-box-shadow: 1px 10px 1px 1px $bottombar-menu-icon-color,
+                                    1px 16px 1px 1px $bottombar-menu-icon-color,
+                                    1px 22px 1px 1px $bottombar-menu-icon-color;
+              }
+              box-shadow:         0 10px 0 1px $bottombar-menu-icon-color,
+                                  0 16px 0 1px $bottombar-menu-icon-color,
+                                  0 22px 0 1px $bottombar-menu-icon-color;
+            }
+          }
+        }
+      }
+
+      // Change things up when the bottom-bar is expanded
+      &.expanded {
+        height: auto;
+        background: transparent;
+
+        .title-area { background: $bottombar-bg; }
+
+        .toggle-bottombar {
+          a { color: $bottombar-menu-link-color-toggled;
+            &::after {
+              // Shh, don't tell, but box-shadows create the menu icon :)
+              @if $experimental {
+                -webkit-box-shadow: 1px 10px 1px 1px $bottombar-menu-icon-color-toggled,
+                                    1px 16px 1px 1px $bottombar-menu-icon-color-toggled,
+                                    1px 22px 1px 1px $bottombar-menu-icon-color-toggled;
+              }
+              box-shadow:         0 10px 0 1px $bottombar-menu-icon-color-toggled,
+                                  0 16px 0 1px $bottombar-menu-icon-color-toggled,
+                                  0 22px 0 1px $bottombar-menu-icon-color-toggled;
+            }
+          }
+        }
+      }
+
+
+
+    }
+
+    // Right and Left Navigation that stacked by default
+    .bottom-bar-section {
+      #{$default-float}: 0;
+      position: relative;
+      width: auto;
+      @include single-transition($default-float, $bottombar-transition-speed);
+
+      ul {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: $bottombar-dropdown-bg;
+        font-size: $rem-base;
+        margin: 0;
+      }
+
+      .divider,
+      [role="separator"] {
+        border-top: $bottombar-divider-border-top;
+        clear: both;
+        height: 1px;
+        width: 100%;
+      }
+
+      ul li {
+        & > a {
+          display: block;
+          width: 100%;
+          color: $bottombar-link-color;
+          padding: 12px 0 12px 0;
+          padding-#{$default-float}: $bottombar-link-padding;
+          font-family: $bottombar-link-font-family;
+          font-size: $bottombar-link-font-size;
+          font-weight: $bottombar-link-weight;
+          text-transform: $bottombar-link-text-transform;
+          background: $bottombar-dropdown-bg;
+
+          &.button {
+            background: $primary-color;
+            font-size: $bottombar-link-font-size;
+             padding-#{$opposite-direction}: $bottombar-link-padding;
+             padding-#{$default-float}: $bottombar-link-padding;
+            &:hover {
+              background: scale-color($primary-color, $lightness: -27%);
+            }
+          }
+          &.button.secondary {
+            background: $secondary-color;
+            &:hover {
+              background: scale-color($secondary-color, $lightness: -11%);
+            }
+          }
+          &.button.success {
+            background: $success-color;
+            &:hover {
+              background: scale-color($success-color, $lightness: -21%);
+            }
+          }
+          &.button.alert {
+            background: $alert-color;
+            &:hover {
+              background: scale-color($alert-color, $lightness: -18%);
+            }
+          }
+
+        }
+
+        // Apply the hover link color when it has that class
+        &:hover:not(.has-form) > a {
+          background: $bottombar-link-bg-hover;
+          color: $bottombar-link-color-hover;
+
+        }
+
+        // Apply the active link color when it has that class
+        &.active > a {
+          background: $bottombar-link-bg-active;
+          color: $bottombar-link-color-active;
+          &:hover {
+                background: $bottombar-link-bg-active-hover;
+                color: $bottombar-link-color-active-hover;
+          }
+        }
+      }
+
+      // Add some extra padding for list items contains buttons
+      .has-form { padding: $bottombar-link-padding; }
+
+      // Styling for list items that have a dropdown within them.
+      .has-dropdown {
+        position: relative;
+
+        & > a {
+          &:after {
+            @if ($bottombar-arrows){
+              @include css-triangle($bottombar-dropdown-toggle-size, rgba($bottombar-dropdown-toggle-color, $bottombar-dropdown-toggle-alpha), $default-float);
+            }
+            margin-#{$opposite-direction}: $bottombar-link-padding;
+            margin-top: -($bottombar-dropdown-toggle-size / 2) - 2;
+            position: absolute;
+            top: 50%;
+            #{$opposite-direction}: 0;
+          }
+        }
+
+        &.moved { position: static;
+          & > .dropdown {
+            @include bottombar-show-dropdown();
+            width: 100%;
+          }
+          & > a:after {
+            display: none;
+          }
+        }
+      }
+
+      // Styling elements inside of dropdowns
+      .dropdown {
+        position: absolute;
+        #{$default-float}: 100%;
+        top: 0;
+        z-index: 99;
+        @include bottombar-hide-dropdown();
+
+        li {
+          width: 100%;
+          height: auto;
+
+          a {
+            font-weight: $bottombar-dropdown-link-weight;
+            padding: 8px $bottombar-link-padding;
+            &.parent-link {
+              font-weight: $bottombar-link-weight;
+            }
+          }
+
+          &.title h5 { margin-bottom: 0;
+            a {
+              color: $bottombar-link-color;
+              line-height: $bottombar-height / 2;
+              display: block;
+            }
+          }
+          &.has-form { padding: 8px $bottombar-link-padding; }
+          .button { top: auto; }
+        }
+
+        label {
+          padding: 8px $bottombar-link-padding 2px;
+          margin-bottom: 0;
+          text-transform: $bottombar-dropdown-label-text-transform;
+          color: $bottombar-dropdown-label-color;
+          font-weight: $bottombar-dropdown-label-font-weight;
+          font-size: $bottombar-dropdown-label-font-size;
+        }
+      }
+    }
+
+    .js-generated { display: block; }
+
+
+    // Top Bar styles intended for screen sizes above the breakpoint.
+    @media #{$bottombar-media-query} {
+      .bottom-bar {
+        background: $bottombar-bg;
+        @include clearfix;
+        overflow: visible;
+
+        .toggle-bottombar { display: none; }
+
+        .title-area { float: $default-float; }
+        .name h1 a { width: auto; }
+
+        input,
+        .button {
+          font-size: rem-calc(14);
+          position: relative;
+          top: $bottombar-button-top;
+        }
+
+        &.expanded { background: $bottombar-bg; }
+      }
+
+      .contain-to-grid .bottom-bar {
+        max-width: $row-width;
+        margin: 0 auto;
+        margin-bottom: $bottombar-margin-bottom;
+      }
+
+      .bottom-bar-section {
+        @include single-transition(none,0,0);
+        #{$default-float}: 0 !important;
+
+        ul {
+          width: auto;
+          height: auto !important;
+          display: inline;
+
+          li {
+            float: $default-float;
+            .js-generated { display: none; }
+          }
+        }
+
+        li {
+          &.hover {
+            > a:not(.button) {
+              background: $bottombar-link-bg-hover;
+              color: $bottombar-link-color-hover;
+            }
+          }
+          &:not(.has-form) {
+            a:not(.button) {
+              padding: 0 $bottombar-link-padding;
+              line-height: $bottombar-height;
+              background: $bottombar-link-bg;
+              &:hover { background: $bottombar-link-bg-hover; }
+            }
+          }
+          &.active:not(.has-form) {
+            a:not(.button) {
+              padding: 0 $bottombar-link-padding;
+              line-height: $bottombar-height;
+              color: $bottombar-link-color-active;
+              background: $bottombar-link-bg-active;
+              &:hover { background: $bottombar-link-bg-active-hover; }
+            }
+          }
+        }
+
+        .has-dropdown {
+
+          @if($bottombar-arrows){
+
+            & > a {
+              padding-#{$opposite-direction}: $bottombar-link-padding + 20 !important;
+              &:after {
+                @include css-triangle($bottombar-dropdown-toggle-size, rgba($bottombar-dropdown-toggle-color, $bottombar-dropdown-toggle-alpha), top);
+                margin-top: -($bottombar-dropdown-toggle-size / 2);
+                top: $bottombar-height / 2;
+              }
+            }
+
+          }
+
+          &.moved { position: relative;
+            & > .dropdown {
+              @include bottombar-hide-dropdown();
+            }
+          }
+
+          &.hover, &.not-click:hover {
+            & > .dropdown {
+              @include bottombar-show-dropdown();
+            }
+          }
+
+          .dropdown li.has-dropdown {
+            & > a {
+              &:after {
+                border: none;
+                content: "\00bb";
+                top: 1rem;
+                margin-top: -1px;
+                #{$opposite-direction}: 5px;
+                line-height: 1.2;
+              }
+            }
+          }
+
+        }
+
+        .dropdown {
+          #{$default-float}: 0;
+          top: auto;
+          background: transparent;
+          min-width: 100%;
+
+          li {
+            a {
+              color: $bottombar-dropdown-link-color;
+              line-height: 1;
+              white-space: nowrap;
+              padding: 12px $bottombar-link-padding;
+              background: $bottombar-dropdown-link-bg;
+            }
+
+            label {
+              white-space: nowrap;
+              background: $bottombar-dropdown-label-bg;
+            }
+
+            // Second Level Dropdowns
+            .dropdown {
+              #{$default-float}: 100%;
+              top: 0;
+            }
+          }
+        }
+
+        & > ul > .divider,
+        & > ul > [role="separator"] {
+          border-bottom: none;
+          border-top: none;
+          border-#{$opposite-direction}: $bottombar-divider-border-bottom;
+          clear: none;
+          height: $bottombar-height;
+          width: 0;
+        }
+
+        .has-form {
+          background: $bottombar-link-bg;
+          padding: 0 $bottombar-height / 3;
+          height: $bottombar-height;
+        }
+
+        // Position overrides for ul.right and ul.left
+        .right {
+          margin-right: 20px;
+          li .dropdown {
+            #{$default-float}: auto;
+            #{$opposite-direction}: 0;
+
+            li .dropdown { #{$opposite-direction}: 100%; }
+          }
+        }
+        .left {
+          li .dropdown {
+            #{$opposite-direction}: auto;
+            #{$default-float}: 0;
+
+            li .dropdown { #{$default-float}: 100%; }
+          }
+        }
+      }
+
+      // Degrade gracefully when Javascript is disabled. Displays dropdown and changes
+      // background & text color on hover.
+      .no-js .bottom-bar-section {
+        ul li {
+          // Apply the hover link color when it has that class
+          &:hover > a {
+            background: $bottombar-link-bg-hover;
+            color: $bottombar-link-color-hover;
+          }
+
+          // Apply the active link color when it has that class
+          &:active > a {
+            background: $bottombar-link-bg-active;
+            color: $bottombar-link-color-active;
+          }
+        }
+
+        .has-dropdown {
+          &:hover {
+            & > .dropdown {
+              @include bottombar-show-dropdown();
+            }
+          }
+        }
+      }
+    }
+  }
+}
